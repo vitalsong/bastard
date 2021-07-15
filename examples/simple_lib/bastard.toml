@@ -1,0 +1,15 @@
+[package]
+name = "mylib"
+version = "0.1.0"
+
+[lib]
+lang = "c99"
+
+[test]
+lang = "c++17"
+
+[dev-dependencies]
+gtest = { git = "http://github.com/google/googletest.git" }
+
+[options.gtest]
+BUILD_GMOCK = false
