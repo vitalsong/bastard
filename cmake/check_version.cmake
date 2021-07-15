@@ -11,11 +11,9 @@ endif()
 #  GIT_COMMIT, BUILD_TIMESTAMP,
 #  VERSION, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH.
 function(GenVersionHeader target version input_template output_file)
-    find_package(Git QUIET REQUIRED)
-    set(target_for_gen "${target}_version_header")
+    set(target_for_gen "${target}-gen-version")
     add_custom_target(${target_for_gen} ALL
-    COMMAND ${CMAKE_COMMAND}
-        -Dgit="${GIT_EXECUTABLE}"
+        COMMAND ${CMAKE_COMMAND}
         -Dpackage_name="${target}"
         -Dversion="${version}"
         -Dinput_template="${input_template}"
@@ -26,6 +24,9 @@ function(GenVersionHeader target version input_template output_file)
 
     if (TARGET ${target})
         add_dependencies(${target} ${target_for_gen})
+        target_include_directories(${target} PUBLIC "${CMAKE_BINARY_DIR}/include")
+    else()
+        include_directories("${CMAKE_BINARY_DIR}/include")
     endif()
 endfunction(GenVersionHeader)
 
@@ -37,6 +38,5 @@ function(CheckVersion package)
         set(input_file "${VERSION_SCRIPT_LOC}/version.h.in")
         set(output_file "${CMAKE_BINARY_DIR}/include/${package}/version.h")
         GenVersionHeader(${package} ${package_version} "${input_file}" "${output_file}")
-        include_directories("${CMAKE_BINARY_DIR}/include")
     endif()
 endfunction(CheckVersion)

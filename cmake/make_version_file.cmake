@@ -2,7 +2,6 @@
 
 # Script variables:
 # package_name - package name
-# git - git exe
 # version - current version
 # input_template - template file
 # output_file - result file
@@ -12,8 +11,10 @@
 # PACKAGE_NAME, VERSION, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, GIT_COMMIT, BUILD_DIRTY
 # BUILD_TIMESTAMP, GIT_COMMIT_URL
 
+find_package(Git QUIET REQUIRED)
+
 execute_process(
-    COMMAND "${git}" log --pretty=format:%h -n 1
+    COMMAND "${GIT_EXECUTABLE}" log --pretty=format:%h -n 1
     WORKING_DIRECTORY "${src_dir}"
     OUTPUT_VARIABLE GIT_COMMIT
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -26,7 +27,7 @@ endif()
 
 if (NOT GIT_COMMIT STREQUAL "UNKNOWN")
     execute_process(
-        COMMAND "${git}" diff --quiet --exit-code
+        COMMAND "${GIT_EXECUTABLE}" diff --quiet --exit-code
         WORKING_DIRECTORY "${src_dir}"
         RESULT_VARIABLE diff_exit_code
     )
@@ -61,7 +62,7 @@ string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S")
 
 #get url for this commit
 execute_process(
-    COMMAND "${git}" config --get remote.origin.url
+    COMMAND "${GIT_EXECUTABLE}" config --get remote.origin.url
     WORKING_DIRECTORY "${src_dir}"
     OUTPUT_VARIABLE GIT_COMMIT_URL
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -78,7 +79,7 @@ endif()
 
 # get commit description and date
 execute_process(
-    COMMAND "${git}" log -1 --no-merges --pretty="%s|%ad" --date=format:"%Y-%m-%d %H:%M:%S"
+    COMMAND "${GIT_EXECUTABLE}" log -1 --no-merges --pretty="%s|%ad" --date=format:"%Y-%m-%d %H:%M:%S"
     WORKING_DIRECTORY "${src_dir}"
     OUTPUT_VARIABLE GIT_COMMIT_DESCRIPTION
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -93,11 +94,8 @@ if(NOT "${GIT_COMMIT_DESCRIPTION}" STREQUAL "")
     string(SUBSTRING "${GIT_COMMIT_DESCRIPTION}" 0 ${split_pos} GIT_COMMIT_MESSAGE)
     math(EXPR split_pos "${split_pos} + 2")
     string(SUBSTRING "${GIT_COMMIT_DESCRIPTION}" ${split_pos} 19 GIT_COMMIT_DATE)
-    
     string(REGEX REPLACE "\"" "_" GIT_COMMIT_MESSAGE "${GIT_COMMIT_MESSAGE}")
-    
 endif()
-
 
 # Format PACKAGE_NAME
 set(PACKAGE_NAME ${package_name})
