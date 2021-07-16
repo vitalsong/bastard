@@ -74,7 +74,7 @@ endfunction(GetAbsoluteUrl)
 #--------------------------------------------------------------------------------------------
 # Required Parameters:
 # name - Dependency name
-# url Repository url
+# url - Repository url
 # tag - tag, branch or commit
 function(DeclareHelper name url tag)
     GetAbsoluteUrl(${url} url)
@@ -97,7 +97,7 @@ function(CleanBuildDep dep_name)
 endfunction(CleanBuildDep)
 
 #--------------------------------------------------------------------------------------------
-function(PopulateHelper name)
+function(PopulateHelper package name)
     BastardFetch_GetProperties(${name})
     if(NOT ${name}_POPULATED)
         message("Setting up ${name}...")
@@ -113,8 +113,14 @@ function(PopulateHelper name)
             BastardFetch_Populate(${name})
         endif()
 
-        GetGitCommit(${${name}_SOURCE_DIR} git_commit)
-        set(${name}_GIT_COMMIT ${git_commit} CACHE INTERNAL "Commit hash for ${name}")
+        GetGitCommit(${${name}_SOURCE_DIR} rev)
+        set(${name}_GIT_COMMIT ${rev} CACHE INTERNAL "Commit hash for ${name}")
+
+        # revision check (only base dependencies)
+        set(lock_rev "${${package}-lock.dependencies.${name}.rev}")
+        if (NOT "${lock_rev}" STREQUAL "" AND NOT "${lock_rev}" STREQUAL "${rev}")
+            message("WARNING: ${name} has a different cached and locked revision ${rev} != ${lock_rev}")
+        endif()
 
         set(${name}_SOURCE_DIR ${${name}_SOURCE_DIR} PARENT_SCOPE)
         set(${name}_BINARY_DIR ${${name}_BINARY_DIR} PARENT_SCOPE)
