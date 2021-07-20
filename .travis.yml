@@ -1,0 +1,15 @@
+dist: bionic
+sudo: required
+language: cpp
+
+os:
+  - linux
+  - windows
+
+compiler:
+  - gcc
+  - clang
+
+script:
+  - cd ./examples/simple_lib && mkdir build && cd build && cmake .. -DCMAKE_TESTING_ENABLED=True && cmake --build .
+  - cd ./examples/lib_and_bin && mkdir build && cd build && cmake .. -DCMAKE_TESTING_ENABLED=True && cmake --build .
