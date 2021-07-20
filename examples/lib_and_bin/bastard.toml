@@ -1,0 +1,27 @@
+[package]
+name = "mylib"
+version = "0.1.0"
+
+[lib]
+lang = "c99"
+
+[[bin]]
+name = "app1"  # src dir
+lang = "c++11"
+
+[[bin]]
+name = "app2"  # src dir
+lang = "c++11"
+
+[[bin]]
+path = "bin/app3.cpp" # single src file
+lang = "c++11"
+
+[test]
+lang = "c++17"
+
+[dev-dependencies]
+gtest = { git = "http://github.com/google/googletest.git" }
+
+[options.gtest]
+BUILD_GMOCK = false
