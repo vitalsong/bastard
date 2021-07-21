@@ -1,4 +1,5 @@
 # bastard
+![testing](https://github.com/vitalsong/bastard/actions/workflows/blank.yml/badge.svg)
 
 ![bastard](https://user-images.githubusercontent.com/43682603/125679677-645bafd4-fa57-4d9b-a33b-0ccadda39db3.png)
 
