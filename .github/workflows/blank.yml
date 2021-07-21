@@ -10,14 +10,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        compiler: [clang]
         os: [ubuntu-latest, windows-latest]
         
     steps:
       - uses: actions/checkout@v2
+
       - name: Test simple lib
         run: |
           cd ./examples/simple_lib && mkdir build && cd build
           cmake .. -DCMAKE_TESTING_ENABLED=True && cmake --build . && cd ..
+
       - name: Test lib and bin
         run: |
           cd ./examples/lib_and_bin && mkdir build && cd build
