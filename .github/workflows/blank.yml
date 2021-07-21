@@ -1,9 +1,17 @@
-name: bastard-test
-on: [push]
+name: CI
+
+on: 
+  push:
+    paths-ignore:
+      - 'README.md'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        
     steps:
       - uses: actions/checkout@v2
       - name: Test simple lib
