@@ -16,6 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+        env:
+          C: clang 
+          CXX: clang++
+
       - name: Test simple lib
         run: |
           cd ./examples/simple_lib && mkdir build && cd build
