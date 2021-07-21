@@ -26,17 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Ninja
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.10.0
-
       - name: Test simple lib
         run: |
           cd ./examples/simple_lib && mkdir build && cd build
-          cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ .. && cmake --build . && cd ..
+          cmake -Dgtest_force_shared_crt=ON .. && cmake --build . && cd ..
 
       - name: Test lib and bin
         run: |
           cd ./examples/lib_and_bin && mkdir build && cd build
-          cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ .. && cmake --build . && cd ..
+          cmake -Dgtest_force_shared_crt=ON .. && cmake --build . && cd ..
