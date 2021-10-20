@@ -10,10 +10,13 @@ Cmake package manager in rust-cargo style
 - semantic version control;
 - automatic target generation (lib/bin/test/bench);
 - cross-compilation;
+- post-commit hook for clang-format
+- pre-commit hook for auto-tagg by version
 
 ## Requirements
 * CMake >= 3.10
 * git
+* python3 (optional for git-hooks)
 
 ## Integration
 Copy and include bastard_setup.cmake file in CMakeLists.txt:

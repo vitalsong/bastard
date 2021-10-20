@@ -8,8 +8,7 @@
 # src_dir - work project dir
 
 # template params:
-# PACKAGE_NAME, VERSION, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, GIT_COMMIT, BUILD_DIRTY
-# BUILD_TIMESTAMP, GIT_COMMIT_URL
+# PACKAGE_NAME, VERSION, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, GIT_COMMIT, GIT_COMMIT_URL
 
 find_package(Git QUIET REQUIRED)
 
@@ -24,20 +23,6 @@ execute_process(
 if (NOT rev_parse_exit_code EQUAL 0)
     set(GIT_COMMIT "UNKNOWN")
 endif()
-
-if (NOT GIT_COMMIT STREQUAL "UNKNOWN")
-    execute_process(
-        COMMAND "${GIT_EXECUTABLE}" diff --quiet --exit-code
-        WORKING_DIRECTORY "${src_dir}"
-        RESULT_VARIABLE diff_exit_code
-    )
-    
-    set(BUILD_DIRTY 0)
-    if (diff_exit_code EQUAL 1)
-        set(BUILD_DIRTY 1)
-    endif()
-endif()
-
 
 # Getting VERSION, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH
 set(VERSION ${version})
@@ -57,8 +42,6 @@ else()
     endif()
 endif()
 
-# Getting BUILD_TIMESTAMP
-string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S")
 
 #get url for this commit
 execute_process(

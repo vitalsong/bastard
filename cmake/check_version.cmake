@@ -10,11 +10,11 @@ endif()
 # The following variables can be used in the template:
 #  GIT_COMMIT, BUILD_TIMESTAMP,
 #  VERSION, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH.
-function(GenVersionHeader target version input_template output_file)
-    set(target_for_gen "${target}-gen-version")
+function(GenVersionHeader package version input_template output_file)
+    set(target_for_gen "${package}-version-header")
     add_custom_target(${target_for_gen} ALL
-        COMMAND ${CMAKE_COMMAND}
-        -Dpackage_name="${target}"
+    COMMAND ${CMAKE_COMMAND}
+        -Dpackage_name="${package}"
         -Dversion="${version}"
         -Dinput_template="${input_template}"
         -Doutput_file="${output_file}"
@@ -22,21 +22,43 @@ function(GenVersionHeader target version input_template output_file)
         -P "${VERSION_SCRIPT_LOC}/make_version_file.cmake"
     COMMENT "Create or update '${output_file}'")
 
-    if (TARGET ${target})
-        add_dependencies(${target} ${target_for_gen})
-        target_include_directories(${target} PUBLIC "${CMAKE_BINARY_DIR}/include")
-    else()
-        include_directories("${CMAKE_BINARY_DIR}/include")
+    if (TARGET ${package})
+        add_dependencies(${package} ${target_for_gen})
     endif()
 endfunction(GenVersionHeader)
+
+function(GenBuildInfoHeader package input_template output_file)
+    set(target_for_gen "${package}-build-header")
+    add_custom_target(${target_for_gen} ALL
+    COMMAND ${CMAKE_COMMAND}
+        -Dpackage_name="${package}"
+        -Dinput_template="${input_template}"
+        -Doutput_file="${output_file}"
+        -Dsrc_dir="${CMAKE_CURRENT_SOURCE_DIR}"
+        -Dcompiler="${CMAKE_CXX_COMPILER_ID}"
+        -P "${VERSION_SCRIPT_LOC}/make_build_info_file.cmake"
+    COMMENT "Create or update '${output_file}'")
+
+    if (TARGET ${package})
+        add_dependencies(${package} ${target_for_gen})
+    endif()
+endfunction(GenBuildInfoHeader)
 
 # ---------------------------------------------------------------------------------------------------------
 # check target for generate package/version.h
 function(CheckVersion package)
     set(package_version "${${package}.package.version}")
     if (NOT "${package_version}" STREQUAL "")
-        set(input_file "${VERSION_SCRIPT_LOC}/version.h.in")
-        set(output_file "${CMAKE_BINARY_DIR}/include/${package}/version.h")
-        GenVersionHeader(${package} ${package_version} "${input_file}" "${output_file}")
+        set(input_dir "${VERSION_SCRIPT_LOC}")
+        set(output_dir "${CMAKE_BINARY_DIR}/include/${package}")
+        GenVersionHeader(${package} ${package_version} "${input_dir}/version.h.in" "${output_dir}/version.h")
+        GenBuildInfoHeader(${package} "${input_dir}/build_info.h.in" "${output_dir}/build_info.h")
+        
+        # TODO: link only to target
+        if (TARGET ${package})
+            target_include_directories(${package} PUBLIC "${CMAKE_BINARY_DIR}/include")
+        else()
+            include_directories("${CMAKE_BINARY_DIR}/include")
+        endif()
     endif()
 endfunction(CheckVersion)

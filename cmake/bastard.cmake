@@ -1,6 +1,6 @@
 include_guard(GLOBAL)
 
-set(BASTARD_VERSION "0.13.3")
+set(BASTARD_VERSION "0.16.0")
 cmake_policy(VERSION 3.10)
 
 # TODO: fix the problem of unloading sys-dependencies (for example Thread) without specifying the language
@@ -75,7 +75,7 @@ function(bastard_setup)
 
     if("${BASTARD_MAIN_PACKAGE}" STREQUAL "${package_name}")
         message("Config main package ${package_name}")
-        CheckPostCommitHook(${CMAKE_CURRENT_SOURCE_DIR})
+        CheckGitHooks(${CMAKE_CURRENT_SOURCE_DIR})
         ConfigPackage(${package_name} TRUE)
     else()
         message("Config sub package ${package_name}")

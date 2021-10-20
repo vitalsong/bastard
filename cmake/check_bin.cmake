@@ -128,6 +128,8 @@ function(CreateBinTagets type default_dir default_name use_test)
         endif()
 
         if (use_test)
+            # include paths for dev-build
+            target_include_directories(${bin_name} PRIVATE "lib" "${${package}_SPECIFIC_DIRS}")
             add_test(${bin_name} ${bin_name})
         endif()
 

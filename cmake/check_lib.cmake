@@ -30,6 +30,17 @@ function(DefaultLibSources _result)
 endfunction(DefaultLibSources)
 
 #--------------------------------------------------------------------------------
+function(GetLibType package _type)
+    set(lib_type "${${package}.lib.type}")
+    # create the interface library only as a dependency
+    # because dev-deps links to the main package lib
+    if ("${lib_type}" STREQUAL "interface" AND ${BASTARD_MAIN_PACKAGE} STREQUAL "${package}")
+        set(lib_type "static")
+    endif()
+    set(${_type} ${lib_type} PARENT_SCOPE)
+endfunction(GetLibType)
+
+#--------------------------------------------------------------------------------
 function(CreateLibTarget package name path)
     ImportOptions(${package} ${name})
 
@@ -64,27 +75,46 @@ function(CreateLibTarget package name path)
     file(GLOB_RECURSE exclude_files ${exclude_files})
     FilterList("${include_files}" "${exclude_files}" sources)
 
-    if("${${package}.lib.type}" STREQUAL "shared")
-        SetDepsLibraryPIC(${package})
-        add_library(${name} SHARED ${sources})
-    else()
-        add_library(${name} ${sources})
+    set(lib_lang "${${package}.lib.lang}")
+    set(def_lang "${${package}.package.lang}")
+    if("${lib_lang}" STREQUAL "")
+        set(lib_lang "${def_lang}")
     endif()
 
-    target_include_directories(${name} PUBLIC "${public_dirs}")
-    target_include_directories(${name} PRIVATE "${private_dirs}")
+    GetLibType(${package} lib_type)
+    if("${lib_type}" STREQUAL "shared")
+        SetDepsLibraryPIC(${package})
+        add_library(${name} SHARED ${sources})
+        target_include_directories(${name} PUBLIC "${public_dirs}")
+        target_include_directories(${name} PRIVATE "${private_dirs}")
+        SetLanguageProperty(${name} "${lib_lang}")
+    elseif("${lib_type}" STREQUAL "interface")
+        # TODO: warning if exists cpp/c source files
+        add_library(${name} INTERFACE)
+        target_include_directories(${name} INTERFACE "${public_dirs}")
+    else()
+        add_library(${name} ${sources})
+        target_include_directories(${name} PUBLIC "${public_dirs}")
+        target_include_directories(${name} PRIVATE "${private_dirs}")
+        SetLanguageProperty(${name} "${lib_lang}")
+    endif()
 endfunction(CreateLibTarget)
 
 #--------------------------------------------------------------------------------
 # linking the current package dependencies to the target
 function(LinkDepsLibraries package target)
     set(deps "${${package}_DEPS_LIST}")
+    GetLibType(${package} lib_type)
     foreach(dep_name ${deps})
         set(links "${${dep_name}_LINKS}")
         if ("${links}" STREQUAL "")
             set(links "${dep_name}")
         endif()
-        target_link_libraries(${target} ${links})
+        if ("${lib_type}" STREQUAL "interface")
+            target_link_libraries(${target} INTERFACE ${links})
+        else()
+            target_link_libraries(${target} ${links})
+        endif()
     endforeach()
 endfunction(LinkDepsLibraries)
 
@@ -113,14 +143,6 @@ function(SetupLibTarget package)
         return()
     endif()
 
-    set(lib_type "${${package}.lib.type}")
-
-    set(lib_lang "${${package}.lib.lang}")
-    set(def_lang "${${package}.package.lang}")
-    if("${lib_lang}" STREQUAL "")
-        set(lib_lang "${def_lang}")
-    endif()
-
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib")
         message(FATAL_ERROR "${package}: Lib structure is not valid")
         return()
@@ -128,7 +150,6 @@ function(SetupLibTarget package)
 
     message("${package}: Create lib target <${lib_name}>")
     CreateLibTarget(${package} ${lib_name} "${CMAKE_CURRENT_SOURCE_DIR}")
-    SetLanguageProperty(${lib_name} "${lib_lang}")
     LinkSysLibraries(${package} "${lib_name}")
     LinkDepsLibraries(${package} "${lib_name}")
     

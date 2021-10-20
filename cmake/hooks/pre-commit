@@ -2,4 +2,4 @@
 # BASTARD_UPDATE_GUARD (remove this line if you dont want to update this file automatically)
 
 # this file is always updated
-.git/hooks/bastard-post-commit
+.git/hooks/bastard-pre-commit
