@@ -1,6 +1,6 @@
 include_guard(GLOBAL)
 
-set(BASTARD_VERSION "0.16.0")
+set(BASTARD_VERSION "0.16.1")
 cmake_policy(VERSION 3.10)
 
 # TODO: fix the problem of unloading sys-dependencies (for example Thread) without specifying the language
