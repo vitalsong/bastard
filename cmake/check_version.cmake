@@ -56,7 +56,7 @@ function(CheckVersion package)
         
         # TODO: link only to target
         if (TARGET ${package})
-            target_include_directories(${package} PUBLIC "${CMAKE_BINARY_DIR}/include")
+            target_include_directories(${package} INTERFACE "${CMAKE_BINARY_DIR}/include")
         else()
             include_directories("${CMAKE_BINARY_DIR}/include")
         endif()
