@@ -177,6 +177,7 @@ function(TomlParser fname rprefix)
             foreach(subkey ${subkeys})
                 list(APPEND stack ${key}.${subkey})
             endforeach()
+            list(REMOVE_DUPLICATES subkeys)
             set(${rprefix}.${key}.__keys__ ${subkeys} PARENT_SCOPE)
         else()
             # end element found
