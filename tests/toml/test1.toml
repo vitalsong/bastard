@@ -1,0 +1,22 @@
+[package]
+name = "test-package"
+
+[bin]
+lang = "c++11"
+
+[lib]
+lang = "c++17"
+
+[sys-dependencies.Threads]
+components = [ "Threads" ]
+
+[sys-dependencies.Boost]
+components = [ "system", "thread", "program_options" ]
+
+[dependencies]
+lib1 = { git = "git@github.com:user1/lib1.git" }
+lib2 = { git = "git@github.com:user2/lib2.git", tag = "v1.0.0" }
+lib3 = { git = "git@github.com:user3/lib3.git", tag = "v2.0.0", interface = "include" }
+
+[options.lib1]
+SOMETHING_ENABLED = true

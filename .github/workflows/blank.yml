@@ -6,7 +6,7 @@ on:
       - 'README.md'
 
 jobs:
-  build-linux:
+  examples-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
           cd ./examples/lib_and_bin && mkdir build && cd build
           cmake .. && cmake --build . && cd ..
 
-  build-windows:
+  examples-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -35,3 +35,11 @@ jobs:
         run: |
           cd ./examples/lib_and_bin && mkdir build && cd build
           cmake -Dgtest_force_shared_crt=ON .. && cmake --build . && cd ..
+
+  cmake-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: toml-parser test
+        run: |
+          cmake -P ./tests/toml/test_toml1.cmake
