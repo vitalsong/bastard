@@ -1,6 +1,7 @@
 include_guard(GLOBAL)
 
 include(${CMAKE_CURRENT_LIST_DIR}/fetch_content.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cache_ctrl.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/utils.cmake)
 
 set(BASTARD_FETCH_UPDATES_DISCONNECTED ON CACHE BOOL "Disable/enable the update stage")
@@ -79,15 +80,13 @@ endfunction(GetAbsoluteUrl)
 function(DeclareHelper name url tag)
     GetAbsoluteUrl(${url} url)
     set(${name}_GIT_URL ${url} CACHE INTERNAL "Git URL for ${name}")
-
-    set(declare_args
-        ${name}
-        GIT_REPOSITORY ${url}
+    UpdateGlobalDepsCache(${url} ${tag} cache_dir)
+    # TODO: load from server if cache not exists
+    BastardFetch_Declare(${name}
+        GIT_REPOSITORY "file://${cache_dir}"
         GIT_TAG        ${tag}
         GIT_PROGRESS   ON
     )
-
-    BastardFetch_Declare(${declare_args})
 endfunction(DeclareHelper)
 
 #--------------------------------------------------------------------------------------------

@@ -20,4 +20,5 @@ ExternalProject_Add(${contentName}-populate
                     TEST_COMMAND        ""
                     USES_TERMINAL_DOWNLOAD  YES
                     USES_TERMINAL_UPDATE    YES
+                    GIT_SHALLOW             1
 )
