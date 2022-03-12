@@ -145,3 +145,8 @@ endfunction(SetupBinTargets)
 function(SetupTestTargets package)
     CreateBinTagets(test "tests" "${package}-test" True)
 endfunction(SetupTestTargets)
+
+#--------------------------------------------------------------------------------
+function(SetupExampleTargets package)
+    CreateBinTagets(example "examples" "${package}-example" False)
+endfunction(SetupExampleTargets)

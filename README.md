@@ -78,6 +78,8 @@ Project initialization begins after calling the bastard_setup() function, so any
     * ```console: bool``` If application is console (by default true)
 * [[test]] Package test-binaries
     * Similar to ```[bin]```
+* [[example]] Package examples
+    * Similar to ```[bin]```
 * [options] CMake variables for targets (legacy)
     * ```<package> = { <name>=<value> }```
 
