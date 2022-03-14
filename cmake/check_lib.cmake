@@ -34,7 +34,7 @@ function(GetLibType package _type)
     set(lib_type "${${package}.lib.type}")
     # create the interface library only as a dependency
     # because dev-deps links to the main package lib
-    if ("${lib_type}" STREQUAL "interface" AND ${BASTARD_MAIN_PACKAGE} STREQUAL "${package}")
+    if ("${lib_type}" STREQUAL "interface" AND "${BASTARD_MAIN_PACKAGE}" STREQUAL "${package}")
         set(lib_type "static")
     endif()
     set(${_type} ${lib_type} PARENT_SCOPE)
