@@ -1,6 +1,6 @@
 include_guard(GLOBAL)
 
-set(BASTARD_VERSION "0.16.6")
+set(BASTARD_VERSION "0.16.7")
 cmake_policy(VERSION 3.10)
 
 # TODO: fix the problem of unloading sys-dependencies (for example Thread) without specifying the language
@@ -32,8 +32,12 @@ function(ConfigPackage package is_root)
         TomlParser("${CMAKE_CURRENT_SOURCE_DIR}/bastard.lock" ${package}-lock)
     endif()
 
+    # clear deps cache
+    set("${package}_DEPS_LIST" "" CACHE INTERNAL "" FORCE)
+
     # setup before SetupDeps to exclude nested dev dependencies
     if (is_root)
+        set("BASTARD_DEPS_LIST" "" CACHE INTERNAL "" FORCE)
         SetupDevDeps(${package})
     endif()
 

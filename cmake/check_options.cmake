@@ -31,6 +31,7 @@ function(ImportOptions package name)
     endif()
 
     foreach(key ${keys})
+        # TODO: check external options
         set(value "${${prefix}.${key}}")
         message("${package}: Set option ${key} = ${value}")
 
