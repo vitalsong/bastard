@@ -14,8 +14,8 @@ endif()
 
 string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S")
 
-# TODO: not working?
-set(BUILD_COMPILER "${compiler}")
+set(BUILD_COMPILER_ID "${compiler_id}")
+set(BUILD_COMPILER_VERSION "${compiler_version}")
 
 # Format PACKAGE_NAME
 set(PACKAGE_NAME ${package_name})

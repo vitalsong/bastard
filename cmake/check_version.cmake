@@ -35,7 +35,8 @@ function(GenBuildInfoHeader package input_template output_file)
         -Dinput_template="${input_template}"
         -Doutput_file="${output_file}"
         -Dsrc_dir="${CMAKE_CURRENT_SOURCE_DIR}"
-        -Dcompiler="${CMAKE_CXX_COMPILER_ID}"
+        -Dcompiler_id=${CMAKE_CXX_COMPILER_ID}
+        -Dcompiler_version=${CMAKE_CXX_COMPILER_VERSION}
         -P "${VERSION_SCRIPT_LOC}/make_build_info_file.cmake"
     COMMENT "Create or update '${output_file}'")
 
@@ -53,7 +54,7 @@ function(CheckVersion package)
         set(output_dir "${CMAKE_BINARY_DIR}/include/${package}")
         GenVersionHeader(${package} ${package_version} "${input_dir}/version.h.in" "${output_dir}/version.h")
         GenBuildInfoHeader(${package} "${input_dir}/build_info.h.in" "${output_dir}/build_info.h")
-        
+
         # TODO: link only to target
         if (TARGET ${package})
             target_include_directories(${package} INTERFACE "${CMAKE_BINARY_DIR}/include")
