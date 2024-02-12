@@ -30,6 +30,7 @@ endfunction(GetGitCommit)
 function(RelPathToAbs relpath out_var)
     find_package(Git QUIET)
     execute_process(
+        # TODO: other remote names?
         COMMAND ${GIT_EXECUTABLE} remote get-url origin
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT_VARIABLE base_url
@@ -41,8 +42,9 @@ function(RelPathToAbs relpath out_var)
         message(FATAL_ERROR "Failed to get origin URL for '${CMAKE_CURRENT_SOURCE_DIR}'")
     endif()
     
-    string(REGEX MATCH "^git@" match ${base_url})
-    if (NOT match STREQUAL "")
+    string(REGEX MATCH "^git@" ssh_prefix ${base_url})
+    string(REGEX MATCH "^https?\:\/\/" http_prefix ${base_url})
+    if (NOT ssh_prefix STREQUAL "")
         # p.s: function get_filename_component don't allow symbol ":"
         string(FIND ${base_url} ":" symb_pos)
         string(REPLACE ":" "/" base_url ${base_url})
@@ -52,6 +54,10 @@ function(RelPathToAbs relpath out_var)
         MATH(EXPR symb_pos "${symb_pos}+1")
         string(SUBSTRING ${url} ${symb_pos} ${len} path_name)
         set(url "${host_name}:${path_name}")
+    elseif (NOT http_prefix STREQUAL "")
+        string(REPLACE "${http_prefix}" "" base_url ${base_url})
+        get_filename_component(url ${relpath} ABSOLUTE BASE_DIR ${base_url})
+        set(url "${http_prefix}${url}")
     else()
         get_filename_component(url ${relpath} ABSOLUTE BASE_DIR ${base_url})
     endif()
